@@ -1,53 +1,54 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MIN(a,b) (a > b)? b : a
+#define MAX_TESTS 32000
 
-int gcd(int a, int b) { return b==0 ? a : gcd(b, a%b); }
+int main() {
+    int i, j, k, m, n, pass;
+    int test_cases;
+    int *mins, *maxs, *prime_tab;
 
-int pour(int ja,int jb,int c){
-    int a=ja;
-    int moves=1; //llenar "A" cuenta como movimiento
-    int b=0;
-    int transfer=0;
-    while(a!=c && b!=c){
-        if(a==0){
-            a=ja;moves++;
-        }
-        transfer=MIN(a,jb-b);
-        a-=transfer;
-        b+=transfer;
-        moves++;
-        if(a==c || b==c){break;}
-        if(b==jb){
-            b=0;moves++;
+    prime_tab = (int *) malloc(sizeof(int)*MAX_TESTS);
+    
+    prime_tab[0]=1;
+    prime_tab[1]=1;
+
+    for (i = 2; i < MAX_TESTS; i++) {
+        if (!prime_tab[i]) {
+            for (j = 2; i * j < MAX_TESTS; j++) {
+                prime_tab[i * j] = 1;
+            }
         }
     }
-    return moves;
-}
 
-int main(){
-    int n,i,a,b,c,t,fromA,fromB,*moves;
-    scanf("%d",&t);
-    n=t;
-    i=0;
-    moves=(int *)malloc(sizeof(int)*t);
-    while(t--){
-        scanf("%d%d%d",&a,&b,&c);
-        if(c>a && c>b){
-            moves[i++]=-1;
-        }else if(c % gcd(a,b)!=0){
-            moves[i++]=-1;
-        }else if(c==a || c==b){
-            moves[i++]=1;
-        }else{
-            fromA=pour(a,b,c);
-            fromB=pour(b,a,c);
-            moves[i++]=MIN(fromA,fromB);
-        }
+    scanf("%d", &test_cases);
+
+    mins = (int *) malloc(sizeof(int) * test_cases);
+    maxs = (int *) malloc(sizeof(int) * test_cases);
+
+    for (i = 0; i < test_cases; i++) {
+        scanf("%d %d", &mins[i], &maxs[i]);
     }
-    for(i=0;i<n;i++){
-        printf("%d\n",moves[i]);
+    
+    for (k = 0; k < test_cases; k++) {
+        m=mins[k];
+        n=maxs[k];
+        for (i = m; i <= n; i++) {
+            pass = (i != 1);
+            for ( j = 2; j * j <= i; j++) {
+                if (!prime_tab[j]) {
+                    if (i % j == 0) {
+                        pass = 0;
+                        break;
+                    }
+                }
+
+            }
+            if (pass){
+                printf("%d\n",i);
+            }
+        }
+        printf("\n");
     }
     return 0;
 }
